@@ -3,8 +3,9 @@ var MongoClient = require('mongodb').MongoClient,
 
 var dboper = require('./operations');
 
+var config = require('../config/config');
 // Connection URL
-var url = 'mongodb://localhost:27017/conFusion';
+var url = config.mongodbUrl;
 
 // Use connect method to connect to the Server
 MongoClient.connect(url, function (err, db) {

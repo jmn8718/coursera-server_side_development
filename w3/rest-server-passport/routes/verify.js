@@ -34,3 +34,19 @@ exports.verifyOrdinaryUser = function (req, res, next) {
         return next(err);
     }
 };
+
+exports.verifyAdmin = function (req, res, next) {
+    // check header or url parameters or post parameters for token
+    var admin = req.decoded._doc.admin;
+
+    // decode token
+    if (admin) {
+        next();
+    } else {
+        // if there is no token
+        // return an error
+        var err = new Error('You are not authorized to perform this operation!');
+        err.status = 403;
+        return next(err);
+    }
+};

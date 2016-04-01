@@ -1,43 +1,60 @@
 var express = require('express');
 var router = express.Router();
+var mongoose = require('mongoose');
+var Verify    = require('./verify');
+
+var Leaderships = require('../models/leaderships');
 
 router.route('/')
-.all(function(req,res,next) {
-      res.writeHead(200, { 'Content-Type': 'text/plain' });
-      next();
+//get all the leaderships
+.get(Verify.verifyOrdinaryUser, function(req,res,next){
+  Leaderships.find({}, function (err, leaderships) {
+    if (err) throw err;
+    if(leaderships === null)
+      leaderships = {}
+    res.json(leaderships);
+  });
 })
-
-.get(function(req,res,next){
-        res.end('Will send all the leaders to you!');
+//create new dish
+.post(Verify.verifyOrdinaryUser, Verify.verifyAdmin, function(req, res, next){
+  Leaderships.create(req.body, function(err, dish){
+    if (err) throw err;
+    //res.status(201);
+    res.json(dish);
+  });
 })
-
-.post(function(req, res, next){
-    res.end('Will add the leader: ' + req.body.name + ' with details: ' + req.body.description);    
-})
-
-.delete(function(req, res, next){
-        res.end('Deleting all leaders');
+//remove all leaderships from database
+.delete(Verify.verifyOrdinaryUser, Verify.verifyAdmin, function(req, res, next){
+  Leaderships.remove({}, function(err, resp){
+    if (err) throw err;
+    res.json(resp);
+  });
 });
 
-router.route('/:leaderId')
-.all(function(req,res,next) {
-      res.writeHead(200, { 'Content-Type': 'text/plain' });
-      next();
+router.route('/:leadershipId')
+.get(Verify.verifyOrdinaryUser, function(req,res,next){
+  Leaderships.findById(req.params.leadershipId,function(err,dish){
+    if (err) throw err;
+    res.json(dish);
+  });
 })
 
-.get(function(req,res,next){
-        res.end('Will send details of the leader: ' + req.params.leaderId +' to you!');
+.put(Verify.verifyOrdinaryUser, Verify.verifyAdmin, function(req, res, next){
+  Leaderships.findByIdAndUpdate(req.params.leadershipId,{
+    $set: req.body
+  },{
+    new: true
+  },function(err,dish){
+    if (err) throw err;
+    res.json(dish);
+  });
 })
 
-.put(function(req, res, next){
-        res.write('Updating the leader: ' + req.params.leaderId + '\n');
-    res.end('Will update the leader: ' + req.body.name + 
-            ' with details: ' + req.body.description);
-})
-
-.delete(function(req, res, next){
-        res.end('Deleting leader: ' + req.params.leaderId);
+.delete(Verify.verifyOrdinaryUser, Verify.verifyAdmin, function(req, res, next){
+  Leaderships.remove(req.params.leadershipId, function(err, resp){
+    if (err) throw err;
+    res.json(resp);
+  });
 });
-
 
 module.exports = router;

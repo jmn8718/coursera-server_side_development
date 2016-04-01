@@ -1,8 +1,18 @@
 var express = require('express');
 var router = express.Router();
+var mongoose = require('mongoose');
 var passport = require('passport');
+
 var User = require('../models/user');
 var Verify    = require('./verify');
+
+router.get('/', Verify.verifyOrdinaryUser, Verify.verifyAdmin,function(req, res, next) {
+  User.find({},function(err, users){
+  	if (err) throw err;
+  	res.json(users);
+  })
+});
+
 
 router.post('/register', function(req, res) {
     User.register(new User({ username : req.body.username }),

@@ -1,3 +1,6 @@
-w2/node_modules
-w3/**/node_modules
+**/node_modules
 **/npm-debug.log
+
+
+ex01.js
+ex02.js
